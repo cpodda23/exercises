@@ -1,44 +1,64 @@
 import booleanIntersects from '@turf/boolean-intersects'
 
 // Clonare l'oggetto
-export function cloneObject(object) {}
+export function cloneObject(object) {
+  return { ...object }
+}
 
 // Unire i due oggetti in un unico, senza modificare gli oggetti originali
-export function mergeObjects(object1, object2) {}
+export function mergeObjects(object1, object2) {
+  return { ...object1, ...object2 }
+}
 
 // Dato un oggetto e un array con chiave-valore, aggiungere chiave-valore all'oggetto
 // senza modificare l'originale, ma restituendo una copia
-export function setPropery(object, [key, value]) {}
+export function setPropery(object, [key, value]) {
+  return { ...object, [key]: value }
+}
 
 // Convertire un oggetto contentene altri oggetti in array
 // La chiave di ciascun oggetto va inserita nell'oggetto stesso come `key`
 // Es.: { a: { name: 'X' }, b: { name: 'Y' } } diventa [{ key: 'a', name: 'X' }, b: { key: 'b', name: 'Y' }]
-export function toArray(object) {}
+export function toArray(object) {
+  return Object.entries(object).map(([key, value]) => ({ ...value, key: key })) // key: key si può sintetizzare come key
+}
 
 // Dato un oggetto, restituire un nuovo oggetto mantenendo
 // soltanto le chiavi i cui valori soddisfano la funzione `predicate` (a cui bisogna passare sia la chiave, sia il valore)
 // Es.: { name: 'Kate', number1: 100, number2: 40, number3: 77 } con predicate = (key, value) => key === 'name' || value > 50
 // restituisce  { name: 'Kate', number1: 100, number3: 77 }
-export function filterObject(object, predicate) {}
+export function filterObject(object, predicate) {
+  const arr = Object.entries(object)
+  return Object.fromEntries(arr.filter(([key, value]) => predicate(key, value)))
+}
 
 // Data una chiave `key`, una funzione `getValue` per ottenere il valore associato a quella chiave e un oggetto `cache`,
 // `getCachedValue` deve chiamare una sola volta `getValue` e conservare il valore ottenuto, in modo che se
 // la funzione viene richiamata successivamente con la stessa chiave, venga restituito il valore senza richiamare `getValue`
-export function getCachedValue(key, getValue, cache) {}
+export function getCachedValue(key, getValue, cache) {
+  //conservare valore in cache, chiamare key, se non trova il valore rifare getValue
+  // const cache.key = getValue()
+}
 
 // Dato un array bidimensionale, dove ogni array interno è una coppia chiave-valore, convertirlo in un oggetto
 // Es.: [['name', 'John'], ['age', 22]] diventa { name: 'John', age: 22 }
-export function arrayToObject(array) {}
+export function arrayToObject(array) {
+  return Object.fromEntries(array)
+}
 
 // Come `arrayToObject`, ma tutti i valori di tipo array devono a loro volta essere trasformati in oggetti
 // Controllare il test per vedere dato iniziale e risultato finale
-export function arrayToObjectDeep(array) {}
+export function arrayToObjectDeep(array) {
+  // Object.fromEntries(array) if([]) return {Object.fromEntries([])}
+}
 
 // Dato un oggetto e una funzione `predicate` da chiamare con la coppia chiave-valore,
 // restituire true se almeno una delle proprietà dell'oggetto soddisfa la funzione `predicate`.
 // Es.: { name: 'Mary', age: 99, children: 4 } con predicate = (key, value) => value > 10
 // ritorna true perché è presente una proprietà maggiore di 10 (age)
-export function hasValidProperty(object, predicate) {}
+export function hasValidProperty(object, predicate) {
+  return Object.entries(object).some(([key, value]) => predicate(key, value))
+}
 
 // Dato un oggetto, estrarre tutti i valori che sono a loro volta oggetti in un oggetto separato, usando come chiave il loro id;
 // rimuovere la chiave nell'oggetto di partenza e sostituirla con `{nome_chiave}Id` e usare come valore l'id dell'oggetto estratto.
