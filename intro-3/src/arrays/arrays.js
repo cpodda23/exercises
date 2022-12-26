@@ -166,20 +166,9 @@ export function populate(array, dataArray, key) {
 // considerando che ai prodotti con special = true si applica la percentuale specificata in discount.special,
 // agli altri prodotti la percentuale specificata in discounts.default
 export function getTotal(products, discounts) {
-  return products.reduce((acc, curr) => {
-    if (products.special === true) {
-      if (discounts.special) {
-        return (
-          acc + curr.price * ((100 - discounts.special) / 100) * curr.quantity
-        )
-      } else {
-        return acc + curr.price * curr.quantity
-      }
-    } else if (discounts.default) {
-      return (
-        acc + curr.price * ((100 - discounts.default) / 100) * curr.quantity
-      )
-    } else return acc + curr.price * curr.quantity
+  return products.reduce((acc, { special, price, quantity }) => {
+    const discount = (special ? discounts.special : discounts.default) / 100 || 0
+    return +(acc += price * quantity * (1 - discount)).toFixed(1)
   }, 0)
 }
 
@@ -190,8 +179,19 @@ export function getTotal(products, discounts) {
 // Se non ci sono commenti, comments deve essere un array vuoto
 // Controllare il risultato del test per vedere come deve essere l'array finale
 export function populatePosts(posts, comments, users) {
-  const arr = [...posts]
-  // arr.map((obj) => ({ ...obj, user: user[userId], comments: comments[postId] }))
+  const usersId = keyBy(users, 'id') //{1: {obj user 1}, 2: {obj user 2}....}
+  const commentsArr = comments.map(({ userId, ...rest }) => ({
+    user: usersId[userId], //{user: {obj user 1}, user: {obj user 2}....}
+    ...rest
+  }))
+  return posts.map(({ userId, ...rest }) => {
+    const commentsId = commentsArr.filter([postId] === rest.id)
+    return ({
+      user: usersId[userId],
+      comments: removeProperties(commentsId, ['postId']),
+      ...rest
+    })
+  })
 }
 
 // Implementare il metodo nativo Array.map()
