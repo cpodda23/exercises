@@ -501,4 +501,4 @@ describe('highlightActiveFeatures', () => {
     }
     expect(highlightActiveFeatures(input, [4, 3])).toEqual(expected)
   })
-})
+}) ///
